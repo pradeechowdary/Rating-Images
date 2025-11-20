@@ -1,4 +1,4 @@
-const API_URL = "https://script.google.com/macros/s/AKfycbwQ9ajRfoQmO_jUEZkWzZwY6jb7AmdZZhQDka2em6SmSUrwT2azZ9OnZDAx7PV3nQEr3w/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbyGeUcEuS43BeJAIdWpMgD_5J1CZPFrdRgkapY6bZ0v9_o_AJiIJR-4Rg8reFRrF1uZNw/exec";
 
 
 const sessionId = "sess-" + Math.random().toString(36).substring(2, 10);
