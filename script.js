@@ -1,5 +1,5 @@
-const API_URL =
-  "https://script.google.com/macros/s/AKfycbzKSj_VTOCPSF1wAx9fsvu9qMu0yLiNu5I_bAS4LahV8LxjsF-KWeoYTPPKCxMZBx2d/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbxJWAXcSn1bo0uRqJ5pAHVNQvftIMmYt5l_Savo5iJECHefQd8EoOXR6m3ARidH3FwP/exec";
+
 
 const sessionId = "sess-" + Math.random().toString(36).substring(2, 10);
 
