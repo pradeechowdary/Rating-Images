@@ -1,112 +1,130 @@
 window.onload = function () {
-  console.log("JS Loaded!");
+  console.log("Survey JS loaded.");
 
-  const API_URL = "https://script.google.com/macros/s/AKfycbxR4jPLqJSvOAPEnMvNqCISvHX8Vien8tKlneQFLN3sUYqGjBAPKdb4k2EC1SLyjF_B-w/exec";
+  // 8 images to rate, in order
+  const images = [
+    "images/img1.jpg",
+    "images/img4.jpg",
+    "images/img11.jpg",
+    "images/img14.jpg",
+    "images/img16.jpg",
+    "images/img7.jpg",
+    "images/img21.jpg",
+    "images/img9.jpg"
+  ];
 
-  const userId = "user-" + Math.random().toString(36).substring(2, 10);
-  const sessionId = "sess-" + Math.random().toString(36).substring(2, 10);
+  const secImages   = document.getElementById("section-images");
+  const secAB       = document.getElementById("section-ab");
+  const secFeedback = document.getElementById("section-feedback");
+  const secEnd      = document.getElementById("section-end");
 
-  const responses = {
-    general: {},
-    images: [],
-    feedback: "",
-    abChoice: ""
-  };
-
-  const images = Array.from({ length: 23 }, (_, i) => `images/img${i + 1}.jpg`);
+  const imgEl      = document.getElementById("survey-image");
+  const progressEl = document.getElementById("img-progress");
 
   let imgIndex = 0;
 
-  const secGeneral = document.getElementById("section-general");
-  const secImages = document.getElementById("section-images");
-  const secFeedback = document.getElementById("section-feedback");
-  const secAB = document.getElementById("section-ab");
-  const secEnd = document.getElementById("section-end");
-
-  const imgEl = document.getElementById("survey-image");
-  const progressEl = document.getElementById("img-progress");
-
-  // ========== GENERAL → IMAGE LOOP ==========
-  window.startImages = function () {
-    const gen1 = document.querySelector("input[name='gen1']:checked");
-    const gen3 = document.querySelector("input[name='gen3']:checked");
-
-    if (!gen1) return alert("Please answer Question 1.");
-    if (!gen3) return alert("Please answer Question 3.");
-
-    const gen2 = [...document.querySelectorAll("#gen-q2 input:checked")].map(x => x.value);
-
-    responses.general = {
-      motivateMost: gen1.value,
-      ignoreList: gen2.join(", "),
-      frequency: gen3.value
-    };
-
-    secGeneral.classList.add("hidden");
-    secImages.classList.remove("hidden");
-
-    loadImage();
+  // collected data
+  const responses = {
+    perImage: [],
+    ab: {},
+    feedback: ""
   };
+
+  // ---------- IMAGE LOOP ----------
 
   function loadImage() {
     imgEl.src = images[imgIndex];
     progressEl.innerText = `Image ${imgIndex + 1} of ${images.length}`;
   }
 
-  // ========== NEXT IMAGE ==========
+  // start with first image
+  loadImage();
+
+  function getRadioValue(name, msg) {
+    const sel = document.querySelector(`input[name='${name}']:checked`);
+    if (!sel) {
+      alert(msg);
+      return null;
+    }
+    return sel.value;
+  }
+
   window.nextImage = function () {
-    const q1 = document.querySelector("input[name='img1']:checked");
-    if (!q1) return alert("Select how the message made you feel.");
+    const likely = getRadioValue(
+      "img_likely",
+      "Please rate how likely you are to act on this message."
+    );
+    if (!likely) return;
 
-    const q2 = [...document.querySelectorAll("#img-q2 input:checked")].map(x => x.value);
-    if (q2.length === 0) return alert("Select at least one standout point.");
+    const motivating = getRadioValue(
+      "img_motivating",
+      "Please rate how motivating this message is."
+    );
+    if (!motivating) return;
 
-    responses.images.push({
+    const trust = getRadioValue(
+      "img_trust",
+      "Please rate how trustworthy this message is."
+    );
+    if (!trust) return;
+
+    responses.perImage.push({
       image: images[imgIndex].replace("images/", ""),
-      feeling: q1.value,
-      standout: q2.join(", ")
+      likely,
+      motivating,
+      trust
     });
 
-    document.querySelectorAll("input[name='img1']").forEach(x => (x.checked = false));
-    document.querySelectorAll("#img-q2 input").forEach(x => (x.checked = false));
+    // clear selections
+    document.querySelectorAll("input[name='img_likely']").forEach(r => (r.checked = false));
+    document.querySelectorAll("input[name='img_motivating']").forEach(r => (r.checked = false));
+    document.querySelectorAll("input[name='img_trust']").forEach(r => (r.checked = false));
 
     imgIndex++;
 
     if (imgIndex < images.length) {
       loadImage();
     } else {
+      // go to A/B block
       secImages.classList.add("hidden");
       secAB.classList.remove("hidden");
     }
   };
 
-  // ========== A/B → FEEDBACK ==========
-  window.goToFeedback = function () {
-    const abSel = document.querySelector("input[name='ab']:checked");
-    if (!abSel) return alert("Select A or B.");
+  // ---------- A/B → FEEDBACK ----------
 
-    responses.abChoice = abSel.value;
+  window.goToFeedback = function () {
+    const ab1 = document.querySelector("input[name='ab1']:checked");
+    const ab2 = document.querySelector("input[name='ab2']:checked");
+    const ab3 = document.querySelector("input[name='ab3']:checked");
+    const ab4 = document.querySelector("input[name='ab4']:checked");
+
+    if (!ab1 || !ab2 || !ab3 || !ab4) {
+      alert("Please answer all A/B comparison questions.");
+      return;
+    }
+
+    responses.ab = {
+      moreMotivating: ab1.value,
+      moreRelatable: ab2.value,
+      moreLikelyToAct: ab3.value,
+      moreTrustworthy: ab4.value
+    };
 
     secAB.classList.add("hidden");
     secFeedback.classList.remove("hidden");
   };
 
-  // ========== FINAL SUBMISSION ==========
+  // ---------- FINAL SUBMIT ----------
+
   window.finishSurvey = function () {
-    responses.feedback = document.getElementById("feedback").value.trim();
+    const fbText = document.getElementById("feedback").value.trim();
+    responses.feedback = fbText;
 
-    const payload = {
-      user_id: userId,
-      session_id: sessionId,
-      ...responses
-    };
+    console.log("FINAL SURVEY DATA:", responses);
 
-    console.log("Sending payload:", payload);
-
-    fetch(API_URL, {
-      method: "POST",
-      body: JSON.stringify(payload)
-    });
+    // backend hook later:
+    // fetch(API_URL, { method: "POST", body: JSON.stringify(responses) })
 
     secFeedback.classList.add("hidden");
     secEnd.classList.remove("hidden");
