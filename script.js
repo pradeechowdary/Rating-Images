@@ -15,7 +15,7 @@ const progress = document.getElementById("progress");
 loadImage();
 
 function loadImage() {
-  imgEl.src = `images/${images[index]}`;
+  imgEl.src = `https://raw.githubusercontent.com/pradeechowdary/Rating-Images/main/images/${images[index]}`;
   progress.innerText = `Image ${index + 1} of ${images.length}`;
 }
 
