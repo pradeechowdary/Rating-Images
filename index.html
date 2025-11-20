@@ -13,7 +13,7 @@
       padding: 24px;
       display: flex;
       justify-content: center;
-      align-items: center;
+      align-items: start;
       min-height: 100vh;
     }
 
@@ -24,6 +24,7 @@
       border-radius: 12px;
       padding: 32px;
       box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+      margin-bottom: 50px;
     }
 
     h1 {
@@ -33,9 +34,19 @@
       font-weight: 600;
     }
 
-    p.subtitle {
+    .section-title {
+      font-size: 16px;
+      font-weight: 600;
+      margin-top: 20px;
+      margin-bottom: 8px;
+      color: #374151;
+    }
+
+    .options label {
+      display: block;
+      margin-bottom: 6px;
       font-size: 14px;
-      color: #6b7280;
+      color: #4b5563;
     }
 
     .image-box {
@@ -46,32 +57,13 @@
       margin-top: 20px;
       display: flex;
       justify-content: center;
+      align-items: center;
     }
 
     #survey-image {
       max-width: 350px;
       border-radius: 12px;
       width: 100%;
-    }
-
-    .section-title {
-      font-size: 15px;
-      font-weight: 600;
-      margin-top: 20px;
-      margin-bottom: 8px;
-      color: #374151;
-    }
-
-    .options {
-      margin-left: 10px;
-      margin-top: 6px;
-    }
-
-    .options label {
-      display: block;
-      margin-bottom: 6px;
-      font-size: 14px;
-      color: #4b5563;
     }
 
     button {
@@ -90,53 +82,136 @@
       background: #1d4ed8;
     }
 
-    .progress {
-      margin-top: 20px;
-      font-size: 13px;
-      color: #6b7280;
+    .hidden {
+      display: none;
     }
 
+    textarea {
+      width: 100%;
+      height: 120px;
+      padding: 10px;
+      font-size: 14px;
+      border-radius: 6px;
+      border: 1px solid #d1d5db;
+      resize: vertical;
+    }
   </style>
 </head>
-<body>
 
+<body>
   <div class="container">
 
-    <h1>Message Evaluation Survey</h1>
-    <p class="subtitle">Please answer the questions for each message.</p>
+    <!-- SECTION 1 — GENERAL QUESTIONS -->
+    <div id="section-general">
+      <h1>General Questions</h1>
 
-    <!-- IMAGE -->
-    <div class="image-box">
-      <img id="survey-image" src="" alt="Message Image">
+      <div class="section-title">1. Which type of message motivates you MOST?</div>
+      <div class="options" id="gen-q1">
+        <label><input type="radio" name="gen1" value="Cost savings"> Cost savings</label>
+        <label><input type="radio" name="gen1" value="Calm"> Calm / stress reduction</label>
+        <label><input type="radio" name="gen1" value="Habit"> Habit / streak</label>
+        <label><input type="radio" name="gen1" value="Environmental impact"> Environmental impact</label>
+        <label><input type="radio" name="gen1" value="Reliability"> Arriving reliably on time</label>
+        <label><input type="radio" name="gen1" value="Social proof"> Social proof</label>
+        <label><input type="radio" name="gen1" value="None"> None</label>
+      </div>
+
+      <div class="section-title">2. Which type of message would you ignore? (Select all that apply)</div>
+      <div class="options" id="gen-q2">
+        <label><input type="checkbox" value="Cost"> Cost</label>
+        <label><input type="checkbox" value="Calm"> Calm</label>
+        <label><input type="checkbox" value="Habit"> Habit</label>
+        <label><input type="checkbox" value="Environmental"> Environmental</label>
+        <label><input type="checkbox" value="Social proof"> Social proof</label>
+        <label><input type="checkbox" value="All"> All of them</label>
+      </div>
+
+      <div class="section-title">3. How many messages per week feel okay?</div>
+      <div class="options" id="gen-q3">
+        <label><input type="radio" name="gen3" value="1-2"> 1–2</label>
+        <label><input type="radio" name="gen3" value="3-4"> 3–4</label>
+        <label><input type="radio" name="gen3" value="5-7"> 5–7</label>
+        <label><input type="radio" name="gen3" value="7+"> More than 7</label>
+        <label><input type="radio" name="gen3" value="None"> None; I'd turn them off</label>
+      </div>
+
+      <button onclick="startImages()">Next</button>
     </div>
 
-    <!-- Q1 -->
-    <div class="section-title">How did this message make you feel about skipping your car?</div>
-    <div class="options" id="q1-options">
-      <label><input type="radio" name="q1" value="Motivated"> Motivated to try transit/alternate modes</label>
-      <label><input type="radio" name="q1" value="Neutral"> Neutral, didn’t care much</label>
-      <label><input type="radio" name="q1" value="Curious"> Curious but unsure</label>
-      <label><input type="radio" name="q1" value="Annoyed"> Annoyed or bothered</label>
+    <!-- SECTION 2 — IMAGE LOOP -->
+    <div id="section-images" class="hidden">
+      <h1>Message Evaluation</h1>
+      <div class="image-box">
+        <img id="survey-image" src="" />
+      </div>
+
+      <div class="section-title">How did this message make you feel?</div>
+      <div class="options" id="img-q1">
+        <label><input type="radio" name="img1" value="Motivated"> Motivated</label>
+        <label><input type="radio" name="img1" value="Neutral"> Neutral</label>
+        <label><input type="radio" name="img1" value="Curious"> Curious</label>
+        <label><input type="radio" name="img1" value="Annoyed"> Annoyed</label>
+      </div>
+
+      <div class="section-title">What stood out most?</div>
+      <div class="options" id="img-q2">
+        <label><input type="checkbox" value="Benefit"> Benefit</label>
+        <label><input type="checkbox" value="Practicality"> Practicality</label>
+        <label><input type="checkbox" value="Tone"> Tone</label>
+        <label><input type="checkbox" value="Emotional pull"> Emotional pull</label>
+        <label><input type="checkbox" value="Social aspect"> Social aspect</label>
+        <label><input type="checkbox" value="Personal connection"> Personal connection</label>
+        <label><input type="checkbox" value="Rewards"> Rewards</label>
+        <label><input type="checkbox" value="Nothing grabbed me"> Nothing grabbed me</label>
+      </div>
+
+      <button onclick="nextImage()">Next</button>
+      <p id="img-progress"></p>
     </div>
 
-    <!-- Q2 -->
-    <div class="section-title">What stood out most in this message? (Select all that apply)</div>
-    <div class="options" id="q2-options">
-      <label><input type="checkbox" value="Benefit"> The benefit (e.g., money saved)</label>
-      <label><input type="checkbox" value="Practicality"> The practicality or convenience</label>
-      <label><input type="checkbox" value="Tone"> The wording or tone (e.g., friendly, supportive)</label>
-      <label><input type="checkbox" value="Emotional pull"> The emotional pull or empathy</label>
-      <label><input type="checkbox" value="Social aspect"> The social aspect (e.g., fitting in)</label>
-      <label><input type="checkbox" value="Personal connection"> The personal connection (e.g., my morals)</label>
-      <label><input type="checkbox" value="Rewards"> The rewards (e.g., free coffee)</label>
-      <label><input type="checkbox" value="Nothing grabbed me"> Nothing really grabbed me</label>
+    <!-- SECTION 3 — A/B TEST -->
+    <div id="section-ab" class="hidden">
+      <h1>A/B Comparison</h1>
+
+      <div class="image-box" style="
+        display:flex;
+        justify-content:center;
+        gap:40px;
+        padding:25px;
+      ">
+        <div style="text-align:center;">
+          <img src="images/img1.jpg" style="max-width:380px; border-radius:12px;">
+          <p style="margin-top:8px; font-weight:600;">A</p>
+        </div>
+
+        <div style="text-align:center;">
+          <img src="images/img2.jpg" style="max-width:380px; border-radius:12px;">
+          <p style="margin-top:8px; font-weight:600;">B</p>
+        </div>
+      </div>
+
+      <div class="section-title">Which message do you prefer?</div>
+      <div class="options" id="ab-q">
+        <label><input type="radio" name="ab" value="A"> A</label>
+        <label><input type="radio" name="ab" value="B"> B</label>
+      </div>
+
+      <button onclick="goToFeedback()">Next</button>
     </div>
 
-    <!-- BUTTON -->
-    <button id="next-btn">Next</button>
+    <!-- SECTION 4 — FEEDBACK -->
+    <div id="section-feedback" class="hidden">
+      <h1>Feedback</h1>
+      <div class="section-title">Any feedback to improve these messages?</div>
+      <textarea id="feedback"></textarea>
+      <button onclick="finishSurvey()">Submit</button>
+    </div>
 
-    <!-- PROGRESS -->
-    <div class="progress" id="progress"></div>
+    <!-- SECTION 5 — COMPLETE -->
+    <div id="section-end" class="hidden">
+      <h1>Thank You!</h1>
+      <p>Your responses have been recorded.</p>
+    </div>
 
   </div>
 
