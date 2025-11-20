@@ -1,125 +1,123 @@
-// ========= CONFIG =========
-const API_URL = "https://script.google.com/macros/s/AKfycbxEMh4YZRFHI0JCqBipFZH0i04sffUHJBsJQjtMGaU2ey7Xrd4UGSZQ_V2xpKG82ZWPAw/exec";
+window.onload = function () {
 
-// Anonymous user + session IDs
-const userId = "user-" + Math.random().toString(36).substring(2, 10);
-const sessionId = "sess-" + Math.random().toString(36).substring(2, 10);
+  // ========= CONFIG =========
+  const API_URL =
+    "https://script.google.com/macros/s/AKfycbxEMh4YZRFHI0JCqBipFZH0i04sffUHJBsJQjtMGaU2ey7Xrd4UGSZQ_V2xpKG82ZWPAw/exec";
 
-// --- GLOBAL STORAGE ---
-const responses = {
-  general: {},
-  images: [],
-  feedback: "",
-  abChoice: ""
-};
+  // Anonymous IDs
+  const userId = "user-" + Math.random().toString(36).substring(2, 10);
+  const sessionId = "sess-" + Math.random().toString(36).substring(2, 10);
 
-// --- IMAGE LIST (23 images in /images) ---
-const images = Array.from({ length: 23 }, (_, i) => `images/img${i + 1}.jpg`);
-
-let imgIndex = 0;
-
-// --- DOM ELEMENTS ---
-const secGeneral = document.getElementById("section-general");
-const secImages = document.getElementById("section-images");
-const secFeedback = document.getElementById("section-feedback");
-const secAB = document.getElementById("section-ab");
-const secEnd = document.getElementById("section-end");
-const imgEl = document.getElementById("survey-image");
-const progressEl = document.getElementById("img-progress");
-
-// --- START IMAGE LOOP ---
-function startImages() {
-  const gen1 = document.querySelector("input[name='gen1']:checked");
-  const gen3 = document.querySelector("input[name='gen3']:checked");
-
-  if (!gen1) return alert("Please answer Question 1 (motivation).");
-  if (!gen3) return alert("Please answer Question 3 (frequency).");
-
-  const gen2 = [...document.querySelectorAll("#gen-q2 input:checked")].map(x => x.value);
-
-  responses.general = {
-    motivateMost: gen1.value,
-    ignoreList: gen2.join(", "),
-    frequency: gen3.value
+  // Data storage
+  const responses = {
+    general: {},
+    images: [],
+    feedback: "",
+    abChoice: ""
   };
 
-  secGeneral.classList.add("hidden");
-  secImages.classList.remove("hidden");
+  // 23 images
+  const images = Array.from({ length: 23 }, (_, i) => `images/img${i + 1}.jpg`);
+  let imgIndex = 0;
 
-  loadImage();
-}
+  // DOM
+  const secGeneral = document.getElementById("section-general");
+  const secImages = document.getElementById("section-images");
+  const secFeedback = document.getElementById("section-feedback");
+  const secAB = document.getElementById("section-ab");
+  const secEnd = document.getElementById("section-end");
+  const imgEl = document.getElementById("survey-image");
+  const progressEl = document.getElementById("img-progress");
 
-// --- LOAD IMAGE ---
-function loadImage() {
-  imgEl.src = images[imgIndex];
-  progressEl.innerText = `Image ${imgIndex + 1} of ${images.length}`;
-}
+  // ========== PAGE 1 → START IMAGE LOOP ==========
+  window.startImages = function () {
+    const gen1 = document.querySelector("input[name='gen1']:checked");
+    const gen3 = document.querySelector("input[name='gen3']:checked");
 
-// --- NEXT IMAGE ---
-function nextImage() {
-  const q1 = document.querySelector("input[name='img1']:checked");
-  if (!q1) return alert("Please answer how the message made you feel.");
+    if (!gen1) return alert("Please answer Question 1.");
+    if (!gen3) return alert("Please answer Question 3.");
 
-  const q2 = [...document.querySelectorAll("#img-q2 input:checked")].map(x => x.value);
-  if (q2.length === 0) return alert("Please select at least one thing that stood out.");
+    const gen2 = [...document.querySelectorAll("#gen-q2 input:checked")].map(x => x.value);
 
-  responses.images.push({
-    image: images[imgIndex].replace("images/", ""), // store just "imgX.jpg"
-    feeling: q1.value,
-    standout: q2.join(", ")
-  });
+    responses.general = {
+      motivateMost: gen1.value,
+      ignoreList: gen2.join(", "),
+      frequency: gen3.value
+    };
 
-  // Reset controls
-  document.querySelectorAll("input[name='img1']").forEach(x => (x.checked = false));
-  document.querySelectorAll("#img-q2 input").forEach(x => (x.checked = false));
+    secGeneral.classList.add("hidden");
+    secImages.classList.remove("hidden");
 
-  imgIndex++;
-
-  if (imgIndex < images.length) {
     loadImage();
-  } else {
-    secImages.classList.add("hidden");
-    secAB.classList.remove("hidden");
-  }
-}
-
-// --- A/B → FEEDBACK ---
-function goToFeedback() {
-  const abSel = document.querySelector("input[name='ab']:checked");
-  if (!abSel) return alert("Please choose A or B.");
-
-  responses.abChoice = abSel.value;
-
-  secAB.classList.add("hidden");
-  secFeedback.classList.remove("hidden");
-}
-
-// --- FINAL SUBMISSION ---
-function finishSurvey() {
-  const feedbackText = document.getElementById("feedback").value.trim();
-  responses.feedback = feedbackText;
-
-  const payload = {
-    user_id: userId,
-    session_id: sessionId,
-    ...responses
   };
 
-  console.log("FINAL RESPONSES (about to send):", payload);
+  // ========== LOAD IMAGE ==========
+  function loadImage() {
+    imgEl.src = images[imgIndex];
+    progressEl.innerText = `Image ${imgIndex + 1} of ${images.length}`;
+  }
 
-  // Send to Google Apps Script
-  fetch(API_URL, {
-    method: "POST",
-    body: JSON.stringify(payload)
-  })
-    .then(res => res.text())
-    .then(txt => {
-      console.log("Sheet response:", txt);
-    })
-    .catch(err => {
-      console.error("Error sending to sheet:", err);
+  // ========== NEXT IMAGE ==========
+  window.nextImage = function () {
+    const q1 = document.querySelector("input[name='img1']:checked");
+    if (!q1) return alert("Please answer how the message made you feel.");
+
+    const q2 = [...document.querySelectorAll("#img-q2 input:checked")].map(x => x.value);
+    if (q2.length === 0) return alert("Please select what stood out.");
+
+    responses.images.push({
+      image: images[imgIndex].replace("images/", ""),
+      feeling: q1.value,
+      standout: q2.join(", ")
     });
 
-  secFeedback.classList.add("hidden");
-  secEnd.classList.remove("hidden");
-}
+    // Clear selections
+    document.querySelectorAll("input[name='img1']").forEach(x => (x.checked = false));
+    document.querySelectorAll("#img-q2 input").forEach(x => (x.checked = false));
+
+    imgIndex++;
+
+    if (imgIndex < images.length) {
+      loadImage();
+    } else {
+      secImages.classList.add("hidden");
+      secAB.classList.remove("hidden");
+    }
+  };
+
+  // ========== A/B → FEEDBACK ==========
+  window.goToFeedback = function () {
+    const abSel = document.querySelector("input[name='ab']:checked");
+    if (!abSel) return alert("Pick A or B");
+
+    responses.abChoice = abSel.value;
+
+    secAB.classList.add("hidden");
+    secFeedback.classList.remove("hidden");
+  };
+
+  // ========== FINAL SUBMIT ==========
+  window.finishSurvey = function () {
+    const feedbackText = document.getElementById("feedback").value.trim();
+    responses.feedback = feedbackText;
+
+    const payload = {
+      user_id: userId,
+      session_id: sessionId,
+      ...responses
+    };
+
+    console.log("Sending payload:", payload);
+
+    fetch(API_URL, {
+      method: "POST",
+      body: JSON.stringify(payload)
+    })
+      .then(res => res.text())
+      .then(t => console.log("Sheet response:", t))
+      .catch(err => console.error("ERR:", err));
+
+    secFeedback.classList.add("hidden");
+    secEnd.classList.remove("hidden");
+  };
+};
