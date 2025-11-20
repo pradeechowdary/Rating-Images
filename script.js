@@ -1,7 +1,7 @@
 window.onload = function () {
   console.log("JS Loaded!");
 
-  const API_URL = "https://script.google.com/macros/s/AKfycbzQvBSxa1qy3BjmRgeGu2qRw2V2RPw8LBGe47erhmftcXB42tuPi1tBce-Zn2sUDLEAKg/exec";
+  const API_URL = "https://script.google.com/macros/s/AKfycbxR4jPLqJSvOAPEnMvNqCISvHX8Vien8tKlneQFLN3sUYqGjBAPKdb4k2EC1SLyjF_B-w/exec";
 
   const userId = "user-" + Math.random().toString(36).substring(2, 10);
   const sessionId = "sess-" + Math.random().toString(36).substring(2, 10);
