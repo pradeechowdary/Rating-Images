@@ -1,8 +1,15 @@
 window.onload = function () {
-  console.log("Survey JS loaded.");
+  console.log("JS Loaded!");
 
-  // 8 images to rate, in order
-  const images = [
+  const secImages = document.getElementById("section-images");
+  const secAB = document.getElementById("section-ab");
+  const secGeneral = document.getElementById("section-general");
+  const secFeedback = document.getElementById("section-feedback");
+  const secEnd = document.getElementById("section-end");
+  const abContainer = document.getElementById("ab-container");
+
+  // 8 images rating
+  const rateImages = [
     "images/img1.jpg",
     "images/img4.jpg",
     "images/img11.jpg",
@@ -13,118 +20,165 @@ window.onload = function () {
     "images/img9.jpg"
   ];
 
-  const secImages   = document.getElementById("section-images");
-  const secAB       = document.getElementById("section-ab");
-  const secFeedback = document.getElementById("section-feedback");
-  const secEnd      = document.getElementById("section-end");
-
-  const imgEl      = document.getElementById("survey-image");
-  const progressEl = document.getElementById("img-progress");
-
   let imgIndex = 0;
 
-  // collected data
+  // A/B comparisons
+  const abScreens = [
+    {
+      a: "images/img1.jpg",
+      b: "images/img4.jpg",
+      q: "Which message is more motivating?",
+      name: "ab1"
+    },
+    {
+      a: "images/img11.jpg",
+      b: "images/img14.jpg",
+      q: "Which message feels more relatable?",
+      name: "ab2"
+    },
+    {
+      a: "images/img16.jpg",
+      b: "images/img7.jpg",
+      q: "Which message would make you more likely to act?",
+      name: "ab3"
+    },
+    {
+      a: "images/img21.jpg",
+      b: "images/img9.jpg",
+      q: "Which message feels more trustworthy?",
+      name: "ab4"
+    }
+  ];
+
+  let abIndex = 0;
+
   const responses = {
-    perImage: [],
+    ratings: [],
     ab: {},
+    general: {},
     feedback: ""
   };
 
-  // ---------- IMAGE LOOP ----------
+  const rateImageEl = document.getElementById("rate-image");
+
+  // ========== RATING SECTION ============
 
   function loadImage() {
-    imgEl.src = images[imgIndex];
-    progressEl.innerText = `Image ${imgIndex + 1} of ${images.length}`;
+    rateImageEl.src = rateImages[imgIndex];
   }
-
-  // start with first image
   loadImage();
 
-  function getRadioValue(name, msg) {
-    const sel = document.querySelector(`input[name='${name}']:checked`);
-    if (!sel) {
-      alert(msg);
-      return null;
-    }
-    return sel.value;
-  }
-
   window.nextImage = function () {
-    const likely = getRadioValue(
-      "img_likely",
-      "Please rate how likely you are to act on this message."
-    );
-    if (!likely) return;
+    const act = document.querySelector("input[name='act']:checked");
+    const mot = document.querySelector("input[name='mot']:checked");
+    const trust = document.querySelector("input[name='trust']:checked");
 
-    const motivating = getRadioValue(
-      "img_motivating",
-      "Please rate how motivating this message is."
-    );
-    if (!motivating) return;
-
-    const trust = getRadioValue(
-      "img_trust",
-      "Please rate how trustworthy this message is."
-    );
-    if (!trust) return;
-
-    responses.perImage.push({
-      image: images[imgIndex].replace("images/", ""),
-      likely,
-      motivating,
-      trust
-    });
-
-    // clear selections
-    document.querySelectorAll("input[name='img_likely']").forEach(r => (r.checked = false));
-    document.querySelectorAll("input[name='img_motivating']").forEach(r => (r.checked = false));
-    document.querySelectorAll("input[name='img_trust']").forEach(r => (r.checked = false));
-
-    imgIndex++;
-
-    if (imgIndex < images.length) {
-      loadImage();
-    } else {
-      // go to A/B block
-      secImages.classList.add("hidden");
-      secAB.classList.remove("hidden");
-    }
-  };
-
-  // ---------- A/B → FEEDBACK ----------
-
-  window.goToFeedback = function () {
-    const ab1 = document.querySelector("input[name='ab1']:checked");
-    const ab2 = document.querySelector("input[name='ab2']:checked");
-    const ab3 = document.querySelector("input[name='ab3']:checked");
-    const ab4 = document.querySelector("input[name='ab4']:checked");
-
-    if (!ab1 || !ab2 || !ab3 || !ab4) {
-      alert("Please answer all A/B comparison questions.");
+    if (!act || !mot || !trust) {
+      alert("Please answer all questions.");
       return;
     }
 
-    responses.ab = {
-      moreMotivating: ab1.value,
-      moreRelatable: ab2.value,
-      moreLikelyToAct: ab3.value,
-      moreTrustworthy: ab4.value
+    responses.ratings.push({
+      image: rateImages[imgIndex].replace("images/", ""),
+      act: act.value,
+      mot: mot.value,
+      trust: trust.value,
+    });
+
+    // Clear
+    document.querySelectorAll("input[name='act']").forEach(r => r.checked = false);
+    document.querySelectorAll("input[name='mot']").forEach(r => r.checked = false);
+    document.querySelectorAll("input[name='trust']").forEach(r => r.checked = false);
+
+    imgIndex++;
+
+    if (imgIndex < rateImages.length) {
+      loadImage();
+    } else {
+      secImages.classList.add("hidden");
+      secAB.classList.remove("hidden");
+      loadAB();
+    }
+  };
+
+  // ========== A/B SECTION ============
+
+  function loadAB() {
+    const data = abScreens[abIndex];
+
+    abContainer.innerHTML = `
+      <div class="section-title">${data.q}</div>
+      <div class="ab-pair">
+        <div class="ab-box">
+          <img src="${data.a}">
+          <div class="ab-label">A</div>
+        </div>
+        <div class="ab-box">
+          <img src="${data.b}">
+          <div class="ab-label">B</div>
+        </div>
+      </div>
+
+      <div class="options">
+        <label><input type="radio" name="${data.name}" value="A"> A</label>
+        <label><input type="radio" name="${data.name}" value="B"> B</label>
+        <label><input type="radio" name="${data.name}" value="Neither"> Neither</label>
+      </div>
+    `;
+  }
+
+  window.nextAB = function () {
+    const item = abScreens[abIndex];
+    const sel = document.querySelector(`input[name='${item.name}']:checked`);
+
+    if (!sel) {
+      alert("Please choose an option.");
+      return;
+    }
+
+    responses.ab[item.name] = sel.value;
+
+    abIndex++;
+
+    if (abIndex < abScreens.length) {
+      loadAB();
+    } else {
+      secAB.classList.add("hidden");
+      secGeneral.classList.remove("hidden");
+    }
+  };
+
+  // ========== GENERAL SECTION ============
+
+  window.goFeedback = function () {
+    const g1 = document.querySelector("input[name='gen1']:checked");
+    const g3 = document.querySelector("input[name='gen3']:checked");
+
+    if (!g1 || !g3) {
+      alert("Please complete the required questions.");
+      return;
+    }
+
+    const ignoreList = [];
+    document.querySelectorAll("#section-general input[type='checkbox']:checked")
+      .forEach(c => ignoreList.push(c.value));
+
+    responses.general = {
+      motivatesMost: g1.value,
+      ignore: ignoreList.join(", "),
+      frequency: g3.value
     };
 
-    secAB.classList.add("hidden");
+    secGeneral.classList.add("hidden");
     secFeedback.classList.remove("hidden");
   };
 
-  // ---------- FINAL SUBMIT ----------
+  // ========== FEEDBACK SECTION ============
 
   window.finishSurvey = function () {
-    const fbText = document.getElementById("feedback").value.trim();
-    responses.feedback = fbText;
+    responses.feedback = document.getElementById("feedback").value.trim();
 
-    console.log("FINAL SURVEY DATA:", responses);
-
-    // backend hook later:
-    // fetch(API_URL, { method: "POST", body: JSON.stringify(responses) })
+    console.log("FINAL DATA:", responses);
 
     secFeedback.classList.add("hidden");
     secEnd.classList.remove("hidden");
