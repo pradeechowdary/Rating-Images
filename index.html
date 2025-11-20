@@ -1,55 +1,358 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Image Rating</title>
+  <meta charset="UTF-8" />
+  <title>Visual Rating Study</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
     body {
-      background: #111;
-      color: white;
-      text-align: center;
-      font-family: Arial, sans-serif;
-      padding: 40px;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #f3f4f6;
+      color: #111827;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 24px;
     }
-    img {
-      width: 260px;
+
+    .app-shell {
+      max-width: 900px;
+      width: 100%;
+    }
+
+    .card {
+      background: #ffffff;
       border-radius: 12px;
-      margin-top: 20px;
+      box-shadow: 0 12px 30px rgba(15, 23, 42, 0.12);
+      padding: 28px 32px 32px;
     }
-    .btns {
-      margin-top: 20px;
+
+    .card-header {
+      margin-bottom: 20px;
     }
-    button {
-      font-size: 22px;
-      padding: 10px 20px;
-      margin: 6px;
-      border-radius: 10px;
-      border: none;
+
+    .card-title {
+      font-size: 24px;
+      font-weight: 600;
+      color: #111827;
+      margin-bottom: 6px;
+    }
+
+    .card-subtitle {
+      font-size: 14px;
+      color: #6b7280;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .intro-body {
+      margin-top: 20px;
+      font-size: 14px;
+      color: #4b5563;
+      line-height: 1.5;
+    }
+
+    .intro-list {
+      margin-top: 12px;
+      padding-left: 18px;
+    }
+
+    .intro-list li {
+      margin-bottom: 4px;
+    }
+
+    .card-footer {
+      margin-top: 24px;
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+    }
+
+    .btn {
+      border-radius: 999px;
+      border: 1px solid transparent;
+      padding: 9px 18px;
+      font-size: 14px;
+      font-weight: 500;
       cursor: pointer;
-      background: #222;
-      color: white;
-      transition: 0.2s;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease,
+                  box-shadow 0.15s ease, transform 0.05s ease;
+      user-select: none;
     }
-    button:hover {
-      background: #444;
+
+    .btn-primary {
+      background: #2563eb;
+      color: #ffffff;
+      box-shadow: 0 8px 18px rgba(37, 99, 235, 0.35);
+    }
+
+    .btn-primary:hover {
+      background: #1d4ed8;
+      box-shadow: 0 10px 24px rgba(37, 99, 235, 0.45);
+      transform: translateY(-1px);
+    }
+
+    .btn-primary:active {
+      transform: translateY(0);
+      box-shadow: 0 6px 14px rgba(37, 99, 235, 0.3);
+    }
+
+    .btn-ghost {
+      background: transparent;
+      color: #374151;
+      border-color: #d1d5db;
+    }
+
+    .btn-ghost:hover {
+      background: #f3f4f6;
+      border-color: #9ca3af;
+    }
+
+    .rating-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+      gap: 24px;
+    }
+
+    @media (max-width: 800px) {
+      .rating-layout {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .image-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: #f9fafb;
+      border-radius: 12px;
+      border: 1px solid #e5e7eb;
+      padding: 16px;
+      min-height: 320px;
+    }
+
+    .image-label {
+      font-size: 13px;
+      color: #6b7280;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .image-container {
+      width: 100%;
+      max-width: 360px;
+      aspect-ratio: 3 / 4;
+      border-radius: 12px;
+      overflow: hidden;
+      background: #111827;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #rating-image {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0;
+      transition: opacity 0.25s ease;
+    }
+
+    #rating-image.visible {
+      opacity: 1;
+    }
+
+    .right-panel {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .instructions-block {
+      font-size: 13px;
+      color: #4b5563;
+      line-height: 1.5;
+    }
+
+    .scale-labels {
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+      color: #6b7280;
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .rating-buttons {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .rating-buttons .btn {
+      flex: 1;
+      border-radius: 10px;
+      font-size: 16px;
+      padding: 10px 0;
+    }
+
+    .progress-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+      color: #6b7280;
+      margin-bottom: 4px;
+    }
+
+    .progress-bar-shell {
+      width: 100%;
+      height: 6px;
+      border-radius: 999px;
+      background: #e5e7eb;
+      overflow: hidden;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      width: 0%;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #2563eb, #1e40af);
+      transition: width 0.25s ease;
+    }
+
+    .summary-text {
+      margin-top: 10px;
+      font-size: 12px;
+      color: #6b7280;
+    }
+
+    .thank-you {
+      margin-top: 18px;
+      font-size: 14px;
+      color: #4b5563;
+      line-height: 1.6;
     }
   </style>
 </head>
-
 <body>
+  <div class="app-shell">
+    <!-- Intro Card -->
+    <div id="intro-card" class="card">
+      <div class="card-header">
+        <h1 class="card-title">Visual Content Rating Study</h1>
+        <p class="card-subtitle">Please review each image and rate it on a 1–5 scale.</p>
+      </div>
+      <div class="intro-body">
+        <p>
+          This short study is designed to collect structured feedback on a set of images.
+          Please rate each image based on how strongly it aligns with the criteria provided
+          (for example: overall appeal, clarity, or suitability for the intended context).
+        </p>
+        <ul class="intro-list">
+          <li>Ratings use a 1–5 scale (1 = very low, 5 = very high).</li>
+          <li>You will see one image at a time in a fixed order.</li>
+          <li>Your response is saved immediately after each rating.</li>
+        </ul>
+        <p style="margin-top: 10px;">
+          The exercise typically takes only a few minutes.
+        </p>
+      </div>
+      <div class="card-footer">
+        <button class="btn btn-primary" id="start-btn">Begin Rating</button>
+      </div>
+    </div>
 
-  <h1>Rate This Image</h1>
+    <!-- Rating Card -->
+    <div id="rating-card" class="card hidden">
+      <div class="card-header">
+        <h2 class="card-title">Image Evaluation</h2>
+        <p class="card-subtitle">Please rate the current image on the scale below.</p>
+      </div>
 
-  <img id="image" src="" alt="image" />
+      <div class="rating-layout">
+        <div class="image-wrapper">
+          <div class="image-label" id="image-label">Image 1</div>
+          <div class="image-container">
+            <img id="rating-image" src="" alt="Image for rating" />
+          </div>
+        </div>
 
-  <div class="btns">
-    <button onclick="rate(1)">1</button>
-    <button onclick="rate(2)">2</button>
-    <button onclick="rate(3)">3</button>
-    <button onclick="rate(4)">4</button>
-    <button onclick="rate(5)">5</button>
+        <div class="right-panel">
+          <div>
+            <div class="instructions-block">
+              <p>
+                Use the scale below to indicate your overall evaluation of the image.
+                Consider factors such as visual quality, clarity, and suitability for the
+                intended purpose.
+              </p>
+            </div>
+
+            <div style="margin-top: 18px;">
+              <div class="scale-labels">
+                <span>1 – Very low</span>
+                <span>5 – Very high</span>
+              </div>
+              <div class="rating-buttons">
+                <button class="btn btn-ghost" data-rating="1">1</button>
+                <button class="btn btn-ghost" data-rating="2">2</button>
+                <button class="btn btn-ghost" data-rating="3">3</button>
+                <button class="btn btn-ghost" data-rating="4">4</button>
+                <button class="btn btn-ghost" data-rating="5">5</button>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <div class="progress-header">
+              <span id="progress-text">Image 1 of 9</span>
+              <span id="percent-text">0%</span>
+            </div>
+            <div class="progress-bar-shell">
+              <div id="progress-bar" class="progress-bar-fill"></div>
+            </div>
+            <div class="summary-text">
+              Your response is saved automatically after each rating.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Finish Card -->
+    <div id="finish-card" class="card hidden">
+      <div class="card-header">
+        <h2 class="card-title">Thank You</h2>
+        <p class="card-subtitle">Your responses have been recorded.</p>
+      </div>
+      <div class="thank-you">
+        <p>
+          Thank you for completing this visual rating exercise. Your feedback has been captured
+          and will be used for further analysis and reporting.
+        </p>
+        <p style="margin-top: 10px;">
+          You may now close this window.
+        </p>
+      </div>
+    </div>
   </div>
 
   <script src="script.js"></script>
-
 </body>
 </html>
