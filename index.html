@@ -13,7 +13,7 @@
       padding: 24px;
       display: flex;
       justify-content: center;
-      align-items: start;
+      align-items: flex-start;
       min-height: 100vh;
     }
 
@@ -42,11 +42,41 @@
       color: #374151;
     }
 
-    .options label {
-      display: block;
-      margin-bottom: 6px;
+    .options {
+      margin-bottom: 8px;
+    }
+
+    .scale-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .scale-pill {
+      display: inline-block;
+    }
+
+    .scale-pill input {
+      display: none;
+    }
+
+    .scale-pill span {
+      display: inline-block;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid #d1d5db;
       font-size: 14px;
-      color: #4b5563;
+      cursor: pointer;
+      min-width: 32px;
+      text-align: center;
+      background: #f9fafb;
+      transition: 0.12s;
+    }
+
+    .scale-pill input:checked + span {
+      background: #2563eb;
+      border-color: #2563eb;
+      color: #ffffff;
     }
 
     .image-box {
@@ -75,7 +105,7 @@
       color: white;
       border-radius: 6px;
       cursor: pointer;
-      transition: 0.2s;
+      transition: 0.15s;
     }
 
     button:hover {
@@ -95,106 +125,216 @@
       border: 1px solid #d1d5db;
       resize: vertical;
     }
+
+    .ab-pair {
+      display: flex;
+      justify-content: center;
+      gap: 32px;
+      padding: 20px 10px;
+      flex-wrap: wrap;
+    }
+
+    .ab-pair img {
+      max-width: 260px;
+      border-radius: 12px;
+    }
+
+    .ab-label {
+      text-align: center;
+      margin-top: 6px;
+      font-weight: 600;
+    }
+
+    .progress {
+      margin-top: 10px;
+      font-size: 13px;
+      color: #6b7280;
+    }
   </style>
 </head>
 
 <body>
   <div class="container">
 
-    <!-- SECTION 1 — GENERAL QUESTIONS -->
-    <div id="section-general">
-      <h1>General Questions</h1>
-
-      <div class="section-title">1. Which type of message motivates you MOST?</div>
-      <div class="options" id="gen-q1">
-        <label><input type="radio" name="gen1" value="Cost savings"> Cost savings</label>
-        <label><input type="radio" name="gen1" value="Calm"> Calm / stress reduction</label>
-        <label><input type="radio" name="gen1" value="Habit"> Habit / streak</label>
-        <label><input type="radio" name="gen1" value="Environmental impact"> Environmental impact</label>
-        <label><input type="radio" name="gen1" value="Reliability"> Arriving reliably on time</label>
-        <label><input type="radio" name="gen1" value="Social proof"> Social proof</label>
-        <label><input type="radio" name="gen1" value="None"> None</label>
-      </div>
-
-      <div class="section-title">2. Which type of message would you ignore? (Select all that apply)</div>
-      <div class="options" id="gen-q2">
-        <label><input type="checkbox" value="Cost"> Cost</label>
-        <label><input type="checkbox" value="Calm"> Calm</label>
-        <label><input type="checkbox" value="Habit"> Habit</label>
-        <label><input type="checkbox" value="Environmental"> Environmental</label>
-        <label><input type="checkbox" value="Social proof"> Social proof</label>
-        <label><input type="checkbox" value="All"> All of them</label>
-      </div>
-
-      <div class="section-title">3. How many messages per week feel okay?</div>
-      <div class="options" id="gen-q3">
-        <label><input type="radio" name="gen3" value="1-2"> 1–2</label>
-        <label><input type="radio" name="gen3" value="3-4"> 3–4</label>
-        <label><input type="radio" name="gen3" value="5-7"> 5–7</label>
-        <label><input type="radio" name="gen3" value="7+"> More than 7</label>
-        <label><input type="radio" name="gen3" value="None"> None; I'd turn them off</label>
-      </div>
-
-      <button onclick="startImages()">Next</button>
-    </div>
-
-    <!-- SECTION 2 — IMAGE LOOP -->
-    <div id="section-images" class="hidden">
+    <!-- SECTION 1 — IMAGE RATING -->
+    <div id="section-images">
       <h1>Message Evaluation</h1>
+
       <div class="image-box">
-        <img id="survey-image" src="" />
+        <img id="survey-image" src="" alt="Message image" />
       </div>
 
-      <div class="section-title">How did this message make you feel?</div>
-      <div class="options" id="img-q1">
-        <label><input type="radio" name="img1" value="Motivated"> Motivated</label>
-        <label><input type="radio" name="img1" value="Neutral"> Neutral</label>
-        <label><input type="radio" name="img1" value="Curious"> Curious</label>
-        <label><input type="radio" name="img1" value="Annoyed"> Annoyed</label>
+      <div class="section-title">1. How likely are you to act on this message?</div>
+      <div class="options">
+        <div class="scale-row">
+          <label class="scale-pill">
+            <input type="radio" name="img_likely" value="1">
+            <span>1</span>
+          </label>
+          <label class="scale-pill">
+            <input type="radio" name="img_likely" value="2">
+            <span>2</span>
+          </label>
+          <label class="scale-pill">
+            <input type="radio" name="img_likely" value="3">
+            <span>3</span>
+          </label>
+          <label class="scale-pill">
+            <input type="radio" name="img_likely" value="4">
+            <span>4</span>
+          </label>
+          <label class="scale-pill">
+            <input type="radio" name="img_likely" value="5">
+            <span>5</span>
+          </label>
+        </div>
+        <small style="font-size:12px;color:#6b7280;">
+          1 = Very likely, 5 = Not at all
+        </small>
       </div>
 
-      <div class="section-title">What stood out most?</div>
-      <div class="options" id="img-q2">
-        <label><input type="checkbox" value="Benefit"> Benefit</label>
-        <label><input type="checkbox" value="Practicality"> Practicality</label>
-        <label><input type="checkbox" value="Tone"> Tone</label>
-        <label><input type="checkbox" value="Emotional pull"> Emotional pull</label>
-        <label><input type="checkbox" value="Social aspect"> Social aspect</label>
-        <label><input type="checkbox" value="Personal connection"> Personal connection</label>
-        <label><input type="checkbox" value="Rewards"> Rewards</label>
-        <label><input type="checkbox" value="Nothing grabbed me"> Nothing grabbed me</label>
+      <div class="section-title">2. How motivating is this message?</div>
+      <div class="options">
+        <div class="scale-row">
+          <label class="scale-pill">
+            <input type="radio" name="img_motivating" value="1">
+            <span>1</span>
+          </label>
+          <label class="scale-pill">
+            <input type="radio" name="img_motivating" value="2">
+            <span>2</span>
+          </label>
+          <label class="scale-pill">
+            <input type="radio" name="img_motivating" value="3">
+            <span>3</span>
+          </label>
+          <label class="scale-pill">
+            <input type="radio" name="img_motivating" value="4">
+            <span>4</span>
+          </label>
+          <label class="scale-pill">
+            <input type="radio" name="img_motivating" value="5">
+            <span>5</span>
+          </label>
+        </div>
+        <small style="font-size:12px;color:#6b7280;">
+          1 = Very motivating, 5 = Not at all
+        </small>
+      </div>
+
+      <div class="section-title">3. How trustworthy is this message?</div>
+      <div class="options">
+        <div class="scale-row">
+          <label class="scale-pill">
+            <input type="radio" name="img_trust" value="1">
+            <span>1</span>
+          </label>
+          <label class="scale-pill">
+            <input type="radio" name="img_trust" value="2">
+            <span>2</span>
+          </label>
+          <label class="scale-pill">
+            <input type="radio" name="img_trust" value="3">
+            <span>3</span>
+          </label>
+          <label class="scale-pill">
+            <input type="radio" name="img_trust" value="4">
+            <span>4</span>
+          </label>
+          <label class="scale-pill">
+            <input type="radio" name="img_trust" value="5">
+            <span>5</span>
+          </label>
+        </div>
+        <small style="font-size:12px;color:#6b7280;">
+          1 = Very trustworthy, 5 = Not at all
+        </small>
       </div>
 
       <button onclick="nextImage()">Next</button>
-      <p id="img-progress"></p>
+      <p class="progress" id="img-progress"></p>
     </div>
 
-    <!-- SECTION 3 — A/B TEST -->
+    <!-- SECTION 2 — A/B COMPARISONS -->
     <div id="section-ab" class="hidden">
-      <h1>A/B Comparison</h1>
+      <h1>A/B Comparisons</h1>
 
-      <div class="image-box" style="display:flex;justify-content:center;gap:40px;padding:25px;">
-        <div style="text-align:center;">
-          <img src="images/img1.jpg" style="max-width:380px;border-radius:12px;">
-          <p style="margin-top:8px;font-weight:600;">A</p>
+      <!-- 1 -->
+      <div class="section-title">1. Which message is more motivating?</div>
+      <div class="ab-pair">
+        <div>
+          <img src="images/img1.jpg" alt="A1">
+          <div class="ab-label">A</div>
         </div>
-
-        <div style="text-align:center;">
-          <img src="images/img2.jpg" style="max-width:380px;border-radius:12px;">
-          <p style="margin-top:8px;font-weight:600;">B</p>
+        <div>
+          <img src="images/img4.jpg" alt="B1">
+          <div class="ab-label">B</div>
         </div>
       </div>
-
-      <div class="section-title">Which message do you prefer?</div>
       <div class="options">
-        <label><input type="radio" name="ab" value="A"> A</label>
-        <label><input type="radio" name="ab" value="B"> B</label>
+        <label><input type="radio" name="ab1" value="A"> A</label>
+        <label><input type="radio" name="ab1" value="B"> B</label>
+        <label><input type="radio" name="ab1" value="Neither"> Neither</label>
+      </div>
+
+      <!-- 2 -->
+      <div class="section-title" style="margin-top:24px;">2. Which message feels more relatable?</div>
+      <div class="ab-pair">
+        <div>
+          <img src="images/img11.jpg" alt="A2">
+          <div class="ab-label">A</div>
+        </div>
+        <div>
+          <img src="images/img14.jpg" alt="B2">
+          <div class="ab-label">B</div>
+        </div>
+      </div>
+      <div class="options">
+        <label><input type="radio" name="ab2" value="A"> A</label>
+        <label><input type="radio" name="ab2" value="B"> B</label>
+        <label><input type="radio" name="ab2" value="Neither"> Neither</label>
+      </div>
+
+      <!-- 3 -->
+      <div class="section-title" style="margin-top:24px;">3. Which message would make you more likely to act?</div>
+      <div class="ab-pair">
+        <div>
+          <img src="images/img16.jpg" alt="A3">
+          <div class="ab-label">A</div>
+        </div>
+        <div>
+          <img src="images/img7.jpg" alt="B3">
+          <div class="ab-label">B</div>
+        </div>
+      </div>
+      <div class="options">
+        <label><input type="radio" name="ab3" value="A"> A</label>
+        <label><input type="radio" name="ab3" value="B"> B</label>
+        <label><input type="radio" name="ab3" value="Neither"> Neither</label>
+      </div>
+
+      <!-- 4 -->
+      <div class="section-title" style="margin-top:24px;">4. Which message feels more trustworthy?</div>
+      <div class="ab-pair">
+        <div>
+          <img src="images/img21.jpg" alt="A4">
+          <div class="ab-label">A</div>
+        </div>
+        <div>
+          <img src="images/img9.jpg" alt="B4">
+          <div class="ab-label">B</div>
+        </div>
+      </div>
+      <div class="options">
+        <label><input type="radio" name="ab4" value="A"> A</label>
+        <label><input type="radio" name="ab4" value="B"> B</label>
+        <label><input type="radio" name="ab4" value="Neither"> Neither</label>
       </div>
 
       <button onclick="goToFeedback()">Next</button>
     </div>
 
-    <!-- SECTION 4 — FEEDBACK -->
+    <!-- SECTION 3 — FEEDBACK -->
     <div id="section-feedback" class="hidden">
       <h1>Feedback</h1>
       <div class="section-title">Any feedback to improve these messages?</div>
@@ -202,7 +342,7 @@
       <button onclick="finishSurvey()">Submit</button>
     </div>
 
-    <!-- SECTION 5 — COMPLETE -->
+    <!-- SECTION 4 — COMPLETE -->
     <div id="section-end" class="hidden">
       <h1>Thank You!</h1>
       <p>Your responses have been recorded.</p>
@@ -210,11 +350,10 @@
 
   </div>
 
+  <!-- auto-bust cache for script.js -->
   <script>
     const version = Date.now();
     document.write(`<script src="script.js?v=${version}"><\/script>`);
   </script>
-
-
 </body>
 </html>
