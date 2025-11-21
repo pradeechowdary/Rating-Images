@@ -3,12 +3,28 @@ window.onload = function () {
 
   const BACKEND_URL = "https://script.google.com/macros/s/AKfycbzx7IP9YZobGLU6LAoCysvMG8CsLQXLorp0p2rZvhrQCC1Lji7XGvdHOt_259Jv6Cez/exec";
 
+  // One session id per survey load
+  const SESSION_ID = "ID-" + Math.floor(Math.random() * 99999999);
+
   const secImages = document.getElementById("section-images");
   const secAB = document.getElementById("section-ab");
   const secGeneral = document.getElementById("section-general");
   const secFeedback = document.getElementById("section-feedback");
   const secEnd = document.getElementById("section-end");
   const abContainer = document.getElementById("ab-container");
+
+  // helper: send payload to backend (no-cors so browser doesn't complain)
+  function sendToBackend(payload) {
+    try {
+      fetch(BACKEND_URL, {
+        method: "POST",
+        mode: "no-cors",
+        body: JSON.stringify(payload)
+      });
+    } catch (err) {
+      console.error("Backend error:", err);
+    }
+  }
 
   // Generate scale buttons (1–5)
   function makeScaleHTML(name) {
@@ -73,11 +89,23 @@ window.onload = function () {
       return;
     }
 
-    responses.ratings.push({
-      image: ratingFlow[imgIndex],
+    const currentImage = ratingFlow[imgIndex];
+
+    const ratingObj = {
+      image: currentImage,
       act: act.value,
       mot: mot.value,
       trust: trust.value,
+    };
+
+    // Store locally (optional)
+    responses.ratings.push(ratingObj);
+
+    // 🔥 SEND THIS IMAGE'S RATINGS IMMEDIATELY
+    sendToBackend({
+      type: "rating",
+      sessionId: SESSION_ID,
+      ratings: [ratingObj]
     });
 
     // Clear selections
@@ -141,6 +169,15 @@ window.onload = function () {
 
     responses.ab[item.name] = sel.value;
 
+    // 🔥 SEND THIS A/B ANSWER IMMEDIATELY
+    sendToBackend({
+      type: "ab",
+      sessionId: SESSION_ID,
+      ab: {
+        [item.name]: sel.value
+      }
+    });
+
     abIndex++;
 
     secAB.classList.add("hidden");
@@ -168,11 +205,20 @@ window.onload = function () {
     document.querySelectorAll("#section-general input[type='checkbox']:checked")
       .forEach(c => ignoreList.push(c.value));
 
-    responses.general = {
+    const generalObj = {
       motivatesMost: g1.value,
       ignore: ignoreList.join(", "),
       frequency: g3.value
     };
+
+    responses.general = generalObj;
+
+    // 🔥 SEND GENERAL ANSWERS IMMEDIATELY
+    sendToBackend({
+      type: "general",
+      sessionId: SESSION_ID,
+      general: generalObj
+    });
 
     secGeneral.classList.add("hidden");
     secFeedback.classList.remove("hidden");
@@ -184,13 +230,11 @@ window.onload = function () {
 
     console.log("FINAL DATA:", responses);
 
-    // SEND TO GOOGLE SHEETS (LONG FORMAT)
-    fetch(BACKEND_URL, {
-      method: "POST",
-      body: JSON.stringify(responses),
-      headers: {
-        "Content-Type": "application/json"
-      }
+    // 🔥 SEND FEEDBACK IMMEDIATELY
+    sendToBackend({
+      type: "feedback",
+      sessionId: SESSION_ID,
+      feedback: responses.feedback
     });
 
     secFeedback.classList.add("hidden");
