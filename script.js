@@ -1,6 +1,8 @@
 window.onload = function () {
   console.log("JS Loaded!");
 
+  const BACKEND_URL = "https://script.google.com/macros/s/AKfycbxHPw1Vi91LDJJP-cn33dQ_EpnAeHZNo7Il9PxZk_XvMRaoBtRTi8uasLJfYBwykk3a/exec";
+
   const secImages = document.getElementById("section-images");
   const secAB = document.getElementById("section-ab");
   const secGeneral = document.getElementById("section-general");
@@ -176,11 +178,20 @@ window.onload = function () {
     secFeedback.classList.remove("hidden");
   };
 
-  // ========== FEEDBACK ==========
+  // ========== FEEDBACK + SEND TO BACKEND ==========
   window.finishSurvey = function () {
     responses.feedback = document.getElementById("feedback").value.trim();
 
     console.log("FINAL DATA:", responses);
+
+    // SEND TO GOOGLE SHEETS (LONG FORMAT)
+    fetch(BACKEND_URL, {
+      method: "POST",
+      body: JSON.stringify(responses),
+      headers: {
+        "Content-Type": "application/json"
+      }
+    });
 
     secFeedback.classList.add("hidden");
     secEnd.classList.remove("hidden");
