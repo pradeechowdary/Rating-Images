@@ -43,6 +43,9 @@
 
     .options {
       margin-bottom: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
     }
 
     .scale-row {
@@ -145,7 +148,7 @@
 <body>
   <div class="container">
 
-    <!-- SECTION 1 — IMAGE RATING -->
+    <!-- SECTION — SINGLE IMAGE RATING -->
     <div id="section-images">
       <h1>Rate This Message</h1>
 
@@ -154,36 +157,18 @@
       </div>
 
       <div class="section-title">1. How likely are you to act on this message?</div>
-      <div class="scale-row">
-        <label class="pill"><input type="radio" name="act" value="1"><span>1</span></label>
-        <label class="pill"><input type="radio" name="act" value="2"><span>2</span></label>
-        <label class="pill"><input type="radio" name="act" value="3"><span>3</span></label>
-        <label class="pill"><input type="radio" name="act" value="4"><span>4</span></label>
-        <label class="pill"><input type="radio" name="act" value="5"><span>5</span></label>
-      </div>
+      <div class="scale-row" id="scale-act"></div>
 
       <div class="section-title">2. How motivating is this message?</div>
-      <div class="scale-row">
-        <label class="pill"><input type="radio" name="mot" value="1"><span>1</span></label>
-        <label class="pill"><input type="radio" name="mot" value="2"><span>2</span></label>
-        <label class="pill"><input type="radio" name="mot" value="3"><span>3</span></label>
-        <label class="pill"><input type="radio" name="mot" value="4"><span>4</span></label>
-        <label class="pill"><input type="radio" name="mot" value="5"><span>5</span></label>
-      </div>
+      <div class="scale-row" id="scale-mot"></div>
 
       <div class="section-title">3. Rate how trustworthy this message is:</div>
-      <div class="scale-row">
-        <label class="pill"><input type="radio" name="trust" value="1"><span>1</span></label>
-        <label class="pill"><input type="radio" name="trust" value="2"><span>2</span></label>
-        <label class="pill"><input type="radio" name="trust" value="3"><span>3</span></label>
-        <label class="pill"><input type="radio" name="trust" value="4"><span>4</span></label>
-        <label class="pill"><input type="radio" name="trust" value="5"><span>5</span></label>
-      </div>
+      <div class="scale-row" id="scale-trust"></div>
 
       <button onclick="nextImage()">Next</button>
     </div>
 
-    <!-- SECTION 2 — A/B COMPARISONS -->
+    <!-- SECTION — A/B COMPARISONS -->
     <div id="section-ab" class="hidden">
       <h1>A/B Comparison</h1>
 
@@ -192,7 +177,7 @@
       <button onclick="nextAB()">Next</button>
     </div>
 
-    <!-- SECTION 3 — GENERAL QUESTIONS -->
+    <!-- SECTION — GENERAL QUESTIONS -->
     <div id="section-general" class="hidden">
       <h1>General Questions</h1>
 
@@ -229,14 +214,14 @@
       <button onclick="goFeedback()">Next</button>
     </div>
 
-    <!-- SECTION 4 — FEEDBACK -->
+    <!-- SECTION — FEEDBACK -->
     <div id="section-feedback" class="hidden">
-      <h1>Feedback</h1>
+      <h1>Any feedback on how these messages could be improved?</h1>
       <textarea id="feedback"></textarea>
       <button onclick="finishSurvey()">Submit</button>
     </div>
 
-    <!-- SECTION 5 — END -->
+    <!-- SECTION — END -->
     <div id="section-end" class="hidden">
       <h1>Thank You!</h1>
       <p>Your responses have been recorded.</p>
@@ -248,5 +233,6 @@
     const v = Date.now();
     document.write(`<script src="script.js?v=${v}"><\/script>`);
   </script>
+
 </body>
 </html>
