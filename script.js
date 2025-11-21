@@ -8,48 +8,41 @@ window.onload = function () {
   const secEnd = document.getElementById("section-end");
   const abContainer = document.getElementById("ab-container");
 
-  // 8 images rating
-  const rateImages = [
-    "images/img1.jpg",
-    "images/img4.jpg",
-    "images/img11.jpg",
-    "images/img14.jpg",
-    "images/img16.jpg",
-    "images/img7.jpg",
-    "images/img21.jpg",
-    "images/img9.jpg"
+  // Generate scale buttons (1–5)
+  function makeScaleHTML(name) {
+    let html = "";
+    for (let i = 1; i <= 5; i++) {
+      html += `
+        <label class="pill">
+          <input type="radio" name="${name}" value="${i}">
+          <span>${i}</span>
+        </label>`;
+    }
+    return html;
+  }
+
+  document.getElementById("scale-act").innerHTML = makeScaleHTML("act");
+  document.getElementById("scale-mot").innerHTML = makeScaleHTML("mot");
+  document.getElementById("scale-trust").innerHTML = makeScaleHTML("trust");
+
+  // FINAL ORDER YOU CONFIRMED
+  const ratingFlow = [
+    "img1.jpg", "img4.jpg",
+    "img11.jpg", "img14.jpg",
+    "img16.jpg", "img7.jpg",
+    "img21.jpg", "img9.jpg",
+    "img19.jpg", "img8.jpg"
+  ];
+
+  // A/B comparisons in between
+  const abPairs = [
+    { a: "img1.jpg", b: "img4.jpg", q: "Which message is more motivating?", name: "ab1" },
+    { a: "img11.jpg", b: "img14.jpg", q: "Which message feels more relatable?", name: "ab2" },
+    { a: "img16.jpg", b: "img7.jpg", q: "Which message would make you more likely to act?", name: "ab3" },
+    { a: "img21.jpg", b: "img9.jpg", q: "Which message feels more trustworthy?", name: "ab4" }
   ];
 
   let imgIndex = 0;
-
-  // A/B comparisons
-  const abScreens = [
-    {
-      a: "images/img1.jpg",
-      b: "images/img4.jpg",
-      q: "Which message is more motivating?",
-      name: "ab1"
-    },
-    {
-      a: "images/img11.jpg",
-      b: "images/img14.jpg",
-      q: "Which message feels more relatable?",
-      name: "ab2"
-    },
-    {
-      a: "images/img16.jpg",
-      b: "images/img7.jpg",
-      q: "Which message would make you more likely to act?",
-      name: "ab3"
-    },
-    {
-      a: "images/img21.jpg",
-      b: "images/img9.jpg",
-      q: "Which message feels more trustworthy?",
-      name: "ab4"
-    }
-  ];
-
   let abIndex = 0;
 
   const responses = {
@@ -61,13 +54,13 @@ window.onload = function () {
 
   const rateImageEl = document.getElementById("rate-image");
 
-  // ========== RATING SECTION ============
-
+  // ========== LOAD FIRST IMAGE ==========
   function loadImage() {
-    rateImageEl.src = rateImages[imgIndex];
+    rateImageEl.src = "images/" + ratingFlow[imgIndex];
   }
   loadImage();
 
+  // ========== NEXT IMAGE LOGIC ==========
   window.nextImage = function () {
     const act = document.querySelector("input[name='act']:checked");
     const mot = document.querySelector("input[name='mot']:checked");
@@ -79,42 +72,50 @@ window.onload = function () {
     }
 
     responses.ratings.push({
-      image: rateImages[imgIndex].replace("images/", ""),
+      image: ratingFlow[imgIndex],
       act: act.value,
       mot: mot.value,
       trust: trust.value,
     });
 
-    // Clear
+    // Clear selections
     document.querySelectorAll("input[name='act']").forEach(r => r.checked = false);
     document.querySelectorAll("input[name='mot']").forEach(r => r.checked = false);
     document.querySelectorAll("input[name='trust']").forEach(r => r.checked = false);
 
     imgIndex++;
 
-    if (imgIndex < rateImages.length) {
-      loadImage();
-    } else {
+    // Insert A/B after every 2 images — BUT only for the first 8 images
+    if (imgIndex % 2 === 0 && imgIndex <= 8) {
+      loadAB();
       secImages.classList.add("hidden");
       secAB.classList.remove("hidden");
-      loadAB();
+      return;
+    }
+
+    // If more rating images left, load next
+    if (imgIndex < ratingFlow.length) {
+      loadImage();
+    } else {
+      // Done → go to general questions
+      secImages.classList.add("hidden");
+      secGeneral.classList.remove("hidden");
     }
   };
 
-  // ========== A/B SECTION ============
-
+  // ========== A/B SECTION ==========
   function loadAB() {
-    const data = abScreens[abIndex];
+    const data = abPairs[abIndex];
 
     abContainer.innerHTML = `
       <div class="section-title">${data.q}</div>
       <div class="ab-pair">
         <div class="ab-box">
-          <img src="${data.a}">
+          <img src="images/${data.a}">
           <div class="ab-label">A</div>
         </div>
         <div class="ab-box">
-          <img src="${data.b}">
+          <img src="images/${data.b}">
           <div class="ab-label">B</div>
         </div>
       </div>
@@ -128,7 +129,7 @@ window.onload = function () {
   }
 
   window.nextAB = function () {
-    const item = abScreens[abIndex];
+    const item = abPairs[abIndex];
     const sel = document.querySelector(`input[name='${item.name}']:checked`);
 
     if (!sel) {
@@ -140,16 +141,18 @@ window.onload = function () {
 
     abIndex++;
 
-    if (abIndex < abScreens.length) {
-      loadAB();
+    secAB.classList.add("hidden");
+    secImages.classList.remove("hidden");
+
+    if (imgIndex < ratingFlow.length) {
+      loadImage();
     } else {
-      secAB.classList.add("hidden");
+      secImages.classList.add("hidden");
       secGeneral.classList.remove("hidden");
     }
   };
 
-  // ========== GENERAL SECTION ============
-
+  // ========== GENERAL QUESTIONS ==========
   window.goFeedback = function () {
     const g1 = document.querySelector("input[name='gen1']:checked");
     const g3 = document.querySelector("input[name='gen3']:checked");
@@ -173,8 +176,7 @@ window.onload = function () {
     secFeedback.classList.remove("hidden");
   };
 
-  // ========== FEEDBACK SECTION ============
-
+  // ========== FEEDBACK ==========
   window.finishSurvey = function () {
     responses.feedback = document.getElementById("feedback").value.trim();
 
