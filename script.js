@@ -1,7 +1,7 @@
 window.onload = function () {
   console.log("JS Loaded!");
 
-  const BACKEND_URL = "https://script.google.com/macros/s/AKfycbxHPw1Vi91LDJJP-cn33dQ_EpnAeHZNo7Il9PxZk_XvMRaoBtRTi8uasLJfYBwykk3a/exec";
+  const BACKEND_URL = "https://script.google.com/macros/s/AKfycbzx7IP9YZobGLU6LAoCysvMG8CsLQXLorp0p2rZvhrQCC1Lji7XGvdHOt_259Jv6Cez/exec";
 
   const secImages = document.getElementById("section-images");
   const secAB = document.getElementById("section-ab");
