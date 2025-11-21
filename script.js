@@ -1,7 +1,7 @@
 window.onload = function () {
   console.log("JS Loaded!");
 
-  const BACKEND_URL = "https://script.google.com/macros/s/AKfycbzx7IP9YZobGLU6LAoCysvMG8CsLQXLorp0p2rZvhrQCC1Lji7XGvdHOt_259Jv6Cez/exec";
+  const BACKEND_URL = "https://script.google.com/macros/s/AKfycbwUQPIKuGL6XSEIyJibjhAKLaxujlytg7186OjNVOnG-1qIjSFroc5dFIkSECvGm_cctA/exec";
 
   // One session id per survey load
   const SESSION_ID = "ID-" + Math.floor(Math.random() * 99999999);
